@@ -210,6 +210,7 @@ bool consumeAbortPending();
 // Battery.c
 float batteryMonitor();
 bool drawBattery(int x, int y);
+bool batteryLowActive();
 
 // Scan.c
 void scanRun(uint16_t centerFreq, uint16_t step);

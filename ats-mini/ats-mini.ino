@@ -1007,6 +1007,15 @@ void loop()
     background_timer = currentTime;
   }
 
+// Blink battery warning at 500 ms when battery is low
+static uint32_t batteryBlinkTimer = 0;
+
+if(batteryLowActive() && (currentTime - batteryBlinkTimer) >= 500)
+{
+  needRedraw = true;
+  batteryBlinkTimer = currentTime;
+}
+
   // Redraw screen if necessary
   if(needRedraw) drawScreen();
 
