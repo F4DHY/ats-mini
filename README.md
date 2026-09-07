@@ -1,3 +1,36 @@
+# ATS Mini - F4DHY Mod
+
+Personal modification of the ATS Mini firmware, based on the official
+[esp32-si4732/ats-mini](https://github.com/esp32-si4732/ats-mini) project.
+
+## Battery gauge modification
+
+This version improves the battery indicator behavior on the ATS Mini.
+
+### Changes
+
+- Continuous battery gauge instead of the original 25% steps
+- Linear indication between 3.30 V and 3.95 V
+- 3.95 V considered as a full battery
+- Low battery warning at 3.30 V
+- 30 mV hysteresis to prevent the LOW state from oscillating
+- Empty battery icon flashes every 500 ms when battery is low
+- Battery voltage remains displayed in red during the LOW warning
+- Original USB charging indication is preserved
+
+The modification was developed and tested on an ATS Mini V4 using the
+ESP32-S3 OSPI build.
+
+## Firmware
+
+A precompiled OSPI firmware is available in the Releases section.
+
+> This is an unofficial modification and is not affiliated with or supported
+> by the original ATS Mini project.
+
+---
+
+
 # ATS Mini
 
 ![](docs/source/_static/esp32-si4732-ui-theme.jpg)
