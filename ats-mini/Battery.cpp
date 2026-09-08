@@ -13,12 +13,17 @@
 #define BATT_LOW_RELEASE     3.330  // Leave LOW state (hysteresis)
 #define BATT_BAR_WIDTH          24  // Maximum internal bar width in pixels
 #define BATT_BLINK_MS          500  // Blink period
+#define BATT_WARN_VOLTAGE 3.368
+#define BATT_WARN_RELEASE 3.385
 
 // Current battery voltage
 static float batteryVolts = 4.0;
 
 // LOW state with hysteresis
 static bool batteryLow = false;
+
+// hysteresis for Red progress bar pixels
+static bool batteryWarn = false;
 
 //
 // Measure and return battery voltage
@@ -100,6 +105,12 @@ bool drawBattery(int x, int y)
     if(batteryVolts <= BATT_LOW_VOLTAGE)
       batteryLow = true;
   }
+
+if(batteryWarn) {
+  if(batteryVolts >= BATT_WARN_RELEASE) batteryWarn = false;
+} else {
+  if(batteryVolts <= BATT_WARN_VOLTAGE) batteryWarn = true;
+}
 
   //
   // USB / charging display
@@ -204,7 +215,12 @@ bool drawBattery(int x, int y)
 
     if(level > BATT_BAR_WIDTH)
       level = BATT_BAR_WIDTH;
+
   }
+
+// Keep warning display stable around the 2/3 pixel threshold
+if(batteryWarn && level > 2)
+  level = 2;
 
   //
   // Battery outline
