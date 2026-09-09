@@ -9,9 +9,11 @@ This version improves the battery indicator behavior on the ATS Mini.
 
 ### Changes
 
-- Continuous battery gauge instead of the original 25% steps
+- Continuous battery gauge instead of the original steps
 - Linear indication between 3.30 V and 3.95 V
 - 3.95 V considered as a full battery
+- The last two pixels of the gauge are displayed in the low-battery color
+- Warning zone hysteresis: enters at 3.368 V and clears above 3.385 V
 - Low battery warning at 3.30 V
 - 30 mV hysteresis to prevent the LOW state from oscillating
 - Empty battery icon flashes every 500 ms when battery is low
@@ -20,6 +22,10 @@ This version improves the battery indicator behavior on the ATS Mini.
 
 The modification was developed and tested on an ATS Mini V4 using the
 ESP32-S3 OSPI build.
+
+A full discharge test showed approximately 8 hours of runtime, with no
+noticeable battery-life degradation compared with the original firmware.
+
 
 ## Firmware
 
