@@ -3,6 +3,25 @@
 Personal modification of the ATS Mini firmware, based on the official
 [esp32-si4732/ats-mini](https://github.com/esp32-si4732/ats-mini) project.
 
+## WiFi / NTP synchronization
+
+On my ATS Mini V4, the `Sync Only` function was unreliable after a full power-off.
+
+The receiver would display `Connecting to WiFi network...` very briefly, then immediately return to the main radio screen without updating the clock. Using the normal `Connect` mode worked correctly and synchronized the time, which suggested that the saved WiFi configuration itself was not the problem.
+
+The issue appeared to be caused by NTP synchronization starting too quickly after the WiFi connection was established.
+
+### Changes
+
+- Added a 2-second delay after WiFi connection before starting NTP synchronization
+- Increased NTP synchronization attempts from 10 to 30
+- Added an explicit `NTP Sync OK` message when synchronization succeeds
+- Added an explicit `NTP Sync FAILED` message when synchronization fails
+- The synchronization result remains visible for 2 seconds
+- WiFi is automatically disconnected after synchronization, as in the original firmware
+
+After this modification, `Sync Only` successfully connects, synchronizes the clock and clearly confirms the result before returning to the radio screen.
+
 ## Battery gauge modification
 
 This version improves the battery indicator behavior on the ATS Mini.
