@@ -197,8 +197,24 @@ void netInit(uint8_t netMode, bool showStatus)
 
     // Get NTP time from the network
     clockReset();
-    for(int j=0 ; j<10 ; j++)
-      if(ntpSyncTime()) break; else delay(500);
+    bool ntpSynced = false;
+
+    for(int j=0 ; j<30 ; j++)
+    {
+      if(ntpSyncTime())
+      {
+        ntpSynced = true;
+        break;
+      }
+      delay(500);
+    }
+
+    // Show result when using Sync Only
+    if(netMode==NET_SYNC)
+    {
+      drawScreen(ntpSynced ? "NTP Sync OK" : "NTP Sync FAILED");
+      delay(2000);
+    }
   }
 
   // If only connected to sync...
