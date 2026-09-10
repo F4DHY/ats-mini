@@ -189,6 +189,10 @@ void netInit(uint8_t netMode, bool showStatus)
   // Initialize WiFi and try connecting to a network
   if(netMode>NET_AP_ONLY && wifiConnect())
   {
+    // Let network settle before NTP sync
+    if(netMode==NET_SYNC)
+      delay(2000);
+
     // Let user see connection status if successful
     if(netMode!=NET_SYNC && showStatus) delay(2000);
 
