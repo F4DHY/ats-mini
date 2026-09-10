@@ -220,7 +220,11 @@ void netInit(uint8_t netMode, bool showStatus)
       delay(2000);
     }
   }
-
+ // Let user see WiFi connection failure in Sync Only mode
+ else if(netMode==NET_SYNC && showStatus)
+  {
+    delay(2000);
+  }
   // If only connected to sync...
   if(netMode==NET_SYNC)
   {
