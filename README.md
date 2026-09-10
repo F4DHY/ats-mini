@@ -5,22 +5,29 @@ Personal modification of the ATS Mini firmware, based on the official
 
 ## WiFi / NTP synchronization
 
-On my ATS Mini V4, the `Sync Only` function was unreliable after a full power-off.
+The `Sync Only` function could be difficult to diagnose when the WiFi connection was weak or unreliable.
 
-The receiver would display `Connecting to WiFi network...` very briefly, then immediately return to the main radio screen without updating the clock. Using the normal `Connect` mode worked correctly and synchronized the time, which suggested that the saved WiFi configuration itself was not the problem.
+In this situation, the receiver could return to the main radio screen without updating the clock. Although the original firmware already displayed a `No WiFi connection` message when the connection failed, the message disappeared almost immediately in `Sync Only` mode, making the failure easy to miss.
 
-The issue appeared to be caused by NTP synchronization starting too quickly after the WiFi connection was established.
+The `Sync Only` behavior has been improved to provide clearer feedback and make NTP synchronization more robust.
 
 ### Changes
 
-- Added a 2-second delay after WiFi connection before starting NTP synchronization
+- Added a 2-second delay after a successful WiFi connection before starting NTP synchronization
 - Increased NTP synchronization attempts from 10 to 30
 - Added an explicit `NTP Sync OK` message when synchronization succeeds
-- Added an explicit `NTP Sync FAILED` message when synchronization fails
-- The synchronization result remains visible for 2 seconds
+- Added an explicit `NTP Sync FAILED` message when WiFi is connected but NTP synchronization fails
+- The original `No WiFi connection` message is now kept visible for 2 seconds when the WiFi connection fails
 - WiFi is automatically disconnected after synchronization, as in the original firmware
 
-After this modification, `Sync Only` successfully connects, synchronizes the clock and clearly confirms the result before returning to the radio screen.
+The result is a clearer `Sync Only` sequence:
+
+- WiFi connection fails: `No WiFi connection`
+- WiFi connects but NTP fails: `NTP Sync FAILED`
+- WiFi and NTP succeed: `NTP Sync OK`
+
+Each result remains visible before the receiver returns to the main radio screen.
+
 
 ## Battery gauge modification
 
