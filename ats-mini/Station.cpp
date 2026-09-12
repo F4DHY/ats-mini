@@ -20,6 +20,96 @@ static const NamedFreq namedFrequencies[] =
 };
 
 //
+// Amateur band context
+//
+enum BandUsage : uint8_t
+{
+  BAND_CW,
+  BAND_DIGI,
+  BAND_VOICE,
+  BAND_ALL_MODE,
+  BAND_BEACON,
+  BAND_SAT
+};
+
+enum IaruRegion : uint8_t
+{
+  REGION_1   = 0x01,
+  REGION_2   = 0x02,
+  REGION_3   = 0x04,
+  REGION_ALL = REGION_1 | REGION_2 | REGION_3
+};
+
+struct BandZone
+{
+  uint16_t freq_start;
+  uint16_t freq_end;
+  const char *band;
+  BandUsage usage;
+  uint8_t regions;
+};
+
+//
+// 40m test band
+//
+static const BandZone bandZones[] =
+{
+  { 7000, 7030, "40m", BAND_CW,       REGION_ALL },
+  { 7030, 7040, "40m", BAND_CW,       REGION_ALL },
+  { 7040, 7050, "40m", BAND_DIGI,     REGION_ALL },
+  { 7050, 7200, "40m", BAND_ALL_MODE, REGION_ALL },
+  { 7200, 7300, "40m", BAND_ALL_MODE, REGION_2   },
+};
+
+static const char *bandUsageName(BandUsage usage)
+{
+  switch(usage)
+  {
+    case BAND_CW:       return "CW";
+    case BAND_DIGI:     return "DIGI";
+    case BAND_VOICE:    return "VOICE";
+    case BAND_ALL_MODE: return "ALL MODE";
+    case BAND_BEACON:   return "BEACON";
+    case BAND_SAT:      return "SAT";
+    default:             return "";
+  }
+}
+
+static const char *findBandZoneByFreq(uint16_t freq)
+{
+  static char buf[32];
+
+  for(const BandZone &zone : bandZones)
+  {
+    if(freq >= zone.freq_start && freq < zone.freq_end)
+    {
+      const char *usage = bandUsageName(zone.usage);
+
+      if(zone.regions == REGION_ALL)
+        snprintf(buf, sizeof(buf), "%s %s", zone.band, usage);
+      else if(zone.regions == REGION_1)
+        snprintf(buf, sizeof(buf), "%s %s [R1]", zone.band, usage);
+      else if(zone.regions == REGION_2)
+        snprintf(buf, sizeof(buf), "%s %s [R2]", zone.band, usage);
+      else if(zone.regions == REGION_3)
+        snprintf(buf, sizeof(buf), "%s %s [R3]", zone.band, usage);
+      else if(zone.regions == (REGION_1 | REGION_2))
+        snprintf(buf, sizeof(buf), "%s %s [R1/2]", zone.band, usage);
+      else if(zone.regions == (REGION_1 | REGION_3))
+        snprintf(buf, sizeof(buf), "%s %s [R1/3]", zone.band, usage);
+      else if(zone.regions == (REGION_2 | REGION_3))
+        snprintf(buf, sizeof(buf), "%s %s [R2/3]", zone.band, usage);
+      else
+        snprintf(buf, sizeof(buf), "%s %s", zone.band, usage);
+
+      return buf;
+    }
+  }
+
+  return nullptr;
+}
+
+//
 // CB channel mappings
 //
 static const char *cbChannelNumber[] =
@@ -347,7 +437,12 @@ bool identifyFrequency(uint16_t freq, bool periodic)
     }
   }
 
-  // Try EIBI schedule
-  name = findScheduleByFreq(freq, periodic);
-  return(showStationName(name? name : "", true));
+  // Try EIBI schedule first
+name = findScheduleByFreq(freq, periodic);
+if(name)
+  return(showStationName(name, true));
+
+// Fall back to amateur band context
+name = findBandZoneByFreq(freq);
+return(showStationName(name? name : "", true));
 }
