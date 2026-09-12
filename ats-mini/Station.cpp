@@ -55,7 +55,7 @@ struct BandZone
 };
 
 //
-// 40m test band
+// Amateur / CB band context zones
 //
 static const BandZone bandZones[] =
 {
@@ -519,11 +519,11 @@ bool identifyFrequency(uint16_t freq, bool periodic)
   }
 
   // Try EIBI schedule first
-name = findScheduleByFreq(freq, periodic);
-if(name)
+  name = findScheduleByFreq(freq, periodic);
+  if(name)
   return(showStationName(name, true));
 
-// Fall back to amateur band context
-name = findBandZoneByFreq(freq);
-return(showStationName(name? name : "", true));
+  // Fall back to amateur band context
+  name = findBandZoneByFreq(freq);
+  return(showStationName(name? name : "", true));
 }
