@@ -8,6 +8,9 @@
 #define MIN_CB_FREQUENCY 26060
 #define MAX_CB_FREQUENCY 27995
 
+
+// Amateur / CB band context fallback.
+// Exact named frequencies, CB channels and active EIBI stations have priority.
 //
 // Named frequencies, sorted by increasing frequency!
 //
@@ -16,6 +19,7 @@ static const NamedFreq namedFrequencies[] =
   {  1840, "FT8"  }, {  3573, "FT8"  }, {  5357, "FT8"  }, {  7074, "FT8" },
   {  7165, "SSTV" }, {  7171, "SSTV" }, { 10136, "FT8"  }, { 14074, "FT8" },
   { 14230, "SSTV" }, { 18100, "FT8"  }, { 21074, "FT8"  }, { 24915, "FT8" },
+  { 27555, " D12E DX CALL" },
   { 27700, "SSTV" }, { 28074, "FT8"  }, { 28680, "SSTV" },
 };
 
@@ -29,7 +33,8 @@ enum BandUsage : uint8_t
   BAND_VOICE,
   BAND_ALL_MODE,
   BAND_BEACON,
-  BAND_SAT
+  BAND_SAT,
+  BAND_CB_DX
 };
 
 enum IaruRegion : uint8_t
@@ -54,11 +59,86 @@ struct BandZone
 //
 static const BandZone bandZones[] =
 {
-  { 7000, 7030, "40m", BAND_CW,       REGION_ALL },
-  { 7030, 7040, "40m", BAND_CW,       REGION_ALL },
+  //
+  // 160m
+  //
+  { 1800, 1810, "160m", BAND_ALL_MODE, REGION_2 | REGION_3 },
+  { 1810, 1838, "160m", BAND_CW,       REGION_ALL },
+  { 1838, 1840, "160m", BAND_DIGI,     REGION_ALL },
+  { 1840, 2000, "160m", BAND_ALL_MODE, REGION_ALL },
+
+  //
+  // 80m
+  //
+  { 3500, 3570, "80m", BAND_CW,       REGION_ALL },
+  { 3570, 3600, "80m", BAND_DIGI,     REGION_ALL },
+  { 3600, 3800, "80m", BAND_ALL_MODE, REGION_ALL },
+  { 3800, 3900, "80m", BAND_ALL_MODE, REGION_2 | REGION_3 },
+  { 3900, 4000, "80m", BAND_ALL_MODE, REGION_2 },
+
+  //
+  // 60m
+  //
+  { 5352, 5354, "60m", BAND_DIGI,     REGION_ALL },
+  { 5354, 5366, "60m", BAND_ALL_MODE, REGION_ALL },
+  { 5366, 5367, "60m", BAND_DIGI,     REGION_ALL },
+
+  //
+  // 40m
+  //
+  { 7000, 7040, "40m", BAND_CW,       REGION_ALL },
   { 7040, 7050, "40m", BAND_DIGI,     REGION_ALL },
   { 7050, 7200, "40m", BAND_ALL_MODE, REGION_ALL },
-  { 7200, 7300, "40m", BAND_ALL_MODE, REGION_2   },
+  { 7200, 7300, "40m", BAND_ALL_MODE, REGION_2 },
+
+  //
+  // 30m
+  //
+  { 10100, 10130, "30m", BAND_CW,     REGION_ALL },
+  { 10130, 10150, "30m", BAND_DIGI,   REGION_ALL },
+
+  //
+  // 20m
+  //
+  { 14000, 14070, "20m", BAND_CW,       REGION_ALL },
+  { 14070, 14112, "20m", BAND_DIGI,     REGION_ALL },
+  { 14112, 14350, "20m", BAND_ALL_MODE, REGION_ALL },
+
+  //
+  // 17m
+  //
+  { 18068, 18095, "17m", BAND_CW,       REGION_ALL },
+  { 18095, 18110, "17m", BAND_DIGI,     REGION_ALL },
+  { 18110, 18168, "17m", BAND_ALL_MODE, REGION_ALL },
+
+  //
+  // 15m
+  //
+  { 21000, 21070, "15m", BAND_CW,       REGION_ALL },
+  { 21070, 21150, "15m", BAND_DIGI,     REGION_ALL },
+  { 21150, 21450, "15m", BAND_ALL_MODE, REGION_ALL },
+
+  //
+  // 12m
+  //
+  { 24890, 24915, "12m", BAND_CW,       REGION_ALL },
+  { 24915, 24930, "12m", BAND_DIGI,     REGION_ALL },
+  { 24930, 24990, "12m", BAND_ALL_MODE, REGION_ALL },
+
+  //
+  // 11m / CB / Freeband
+  //
+  { 26060, 28000, "11m", BAND_CB_DX,    REGION_ALL },
+
+  //
+  // 10m
+  //
+  { 28000, 28070, "10m", BAND_CW,       REGION_ALL },
+  { 28070, 28190, "10m", BAND_DIGI,     REGION_ALL },
+  { 28190, 28225, "10m", BAND_BEACON,   REGION_ALL },
+  { 28225, 29300, "10m", BAND_ALL_MODE, REGION_ALL },
+  { 29300, 29510, "10m", BAND_SAT,      REGION_ALL },
+  { 29510, 29700, "10m", BAND_ALL_MODE, REGION_ALL },
 };
 
 static const char *bandUsageName(BandUsage usage)
@@ -71,6 +151,7 @@ static const char *bandUsageName(BandUsage usage)
     case BAND_ALL_MODE: return "ALL MODE";
     case BAND_BEACON:   return "BEACON";
     case BAND_SAT:      return "SAT";
+    case BAND_CB_DX:    return "CB/DX"; 
     default:             return "";
   }
 }
