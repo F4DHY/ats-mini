@@ -1,3 +1,11 @@
+> ⚠️ **Work in progress**
+>
+> I'm currently working on this version and adding new features.  
+> It's not ready for use yet.
+>
+> Stay tuned! :)
+
+
 # ATS Mini - F4DHY Mod
 
 Personal modification of the ATS Mini firmware, based on the official
