@@ -292,7 +292,7 @@ static uint8_t dateTimeSecond;
 //
 uint8_t uiLayoutIdx = 0;
 static const char *uiLayoutDesc[] =
-{ "Default", "S-Meter" };
+{ "Default", "S-Meter", "F4DHY-UI" };
 
 //
 // USB Port Mode Menu

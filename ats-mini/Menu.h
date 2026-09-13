@@ -50,6 +50,7 @@
 // UI Layouts
 #define UI_DEFAULT  0
 #define UI_SMETER   1
+#define UI_F4DHY    2
 
 // Seek modes
 #define SEEK_DEFAULT  0
