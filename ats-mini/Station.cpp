@@ -157,6 +157,14 @@ BandUsage getBandUsage(uint16_t freq)
   return BAND_NONE;
 }
 
+BandUsage getFMBandUsage(uint16_t freq)
+{
+  if(freq >= 8750 && freq <= 10800)
+    return BAND_VOICE;
+
+  return BAND_NONE;
+}
+
 static const char *bandUsageName(BandUsage usage)
 {
   switch(usage)
@@ -394,6 +402,8 @@ static bool showRdsTime()
   return(rx.getRdsUTCEpoch(&epoch) && clockSetEpoch(epoch));
 }
 
+static bool rdsPsActive = false;
+
 bool checkRds()
 {
   bool needRedraw = false;
@@ -403,13 +413,18 @@ bool checkRds()
 
   if(rx.getRdsReceived() && rx.getRdsSync() && rx.getRdsSyncFound())
   {
+    const char *rdsName = rx.getRdsStationName();
+    rdsPsActive = (mode & RDS_PS) && rdsName && rdsName[0];
     needRedraw |= (mode & RDS_PS) && showStationName(rx.getRdsStationName());
     needRedraw |= (mode & RDS_RT) && showRadioText(rx.getRdsVersionCode()? rx.getRdsText2B() : rx.getRdsText2A());
     needRedraw |= (mode & RDS_PI) && showRdsPiCode(rx.getRdsPI());
     needRedraw |= (mode & RDS_CT) && showRdsTime();
     needRedraw |= (mode & RDS_PT) && showRdsProgramType(rx.getRdsProgramTypeX(), !!(mode & RDS_RBDS));
   }
-
+  else
+  {
+  rdsPsActive = false;
+  }
   // Return TRUE if any RDS information changes
   return(needRedraw);
 }
@@ -507,7 +522,16 @@ bool identifyFrequency(uint16_t freq, bool periodic)
   static bool name_found = false;
 
   // RDS has priority on FM
-  if(currentMode==FM) return(false);
+  if(currentMode==FM)
+{
+  if(freq >= 8750 && freq <= 10800 && !rdsPsActive)
+  {
+    showStationName("FM RADIO", true);
+    return(true);
+  }
+
+  return(false);
+}
 
   // Do not try to look up static names more than once for the same freq
   if(periodic && last_freq==freq && name_found) return(false);

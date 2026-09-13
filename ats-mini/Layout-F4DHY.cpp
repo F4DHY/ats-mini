@@ -46,7 +46,9 @@ bool useBandColors =
 
 BandUsage usage = BAND_NONE;
 
-if(currentMode != FM)
+if(currentMode == FM)
+  usage = getFMBandUsage(tickFreq);
+else
   usage = getBandUsage(tickFreq);
 
 if(useBandColors)

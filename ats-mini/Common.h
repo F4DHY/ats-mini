@@ -239,6 +239,7 @@ enum BandUsage : uint8_t
 };
 
 BandUsage getBandUsage(uint16_t freq);
+BandUsage getFMBandUsage(uint16_t freq);
 
 uint8_t getNamedFrequencyCount();
 uint16_t getNamedFrequencyFreq(uint8_t index);
