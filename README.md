@@ -164,6 +164,24 @@ Band plans, allocations, operating modes and transmitting privileges may vary by
 
 **Always refer to the applicable national regulations and current official band plans before transmitting.**
 
+### Screenshots
+
+#### IARU Region 2 context
+![40m ALL MODE - Region 2](docs/images/band-context-r2.jpeg)
+
+*40m at 7.250 MHz showing the Region 2 specific extension.*
+
+#### IARU Regions 2/3 context
+![80m ALL MODE - Regions 2 and 3](docs/images/band-context-r2-r3.jpeg)
+
+*80m at 3.804 MHz showing availability specific to IARU Regions 2 and 3.*
+
+#### 27.555 MHz DX calling frequency
+![27.555 MHz DX Call](docs/images/dx-call-27555.jpeg)
+
+*Dedicated display for the well-known 27.555 MHz USB DX calling frequency.*
+
+
 ---
 
 ## Firmware
