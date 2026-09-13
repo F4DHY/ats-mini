@@ -2,6 +2,7 @@
 #include "Themes.h"
 #include "Menu.h"
 #include "Draw.h"
+#include <string.h>
 
 static int getInterpolatedStrength(int rssi)
 {
@@ -51,7 +52,55 @@ static void drawSmallScale(uint32_t freq, int y)
   const uint16_t scaleStart = 51;
   const uint16_t scaleEnd = 269;
 
-  for(int i=scaleStart+3; i<=scaleEnd-3; i+=2) spr.drawPixel(i, y, TH.scale_line);
+  for(int i = scaleStart + 3; i <= scaleEnd - 3; i += 2)
+{
+  uint16_t f = band->minimumFreq +
+    ((uint32_t)(i - scaleStart) * (band->maximumFreq - band->minimumFreq)) /
+    (scaleEnd - scaleStart);
+
+  uint16_t color = TH.scale_line;
+
+bool useBandColors =
+  strcmp(TH.name, "eInk") != 0 &&
+  strcmp(TH.name, "Pager") != 0 &&
+  strcmp(TH.name, "Orange") != 0 &&
+  strcmp(TH.name, "Phosphor") != 0 &&
+  strcmp(TH.name, "Night") != 0 &&
+  strcmp(TH.name, "Magenta") != 0;
+
+  if(useBandColors)
+{
+  switch(getBandUsage(f))
+  {
+    case BAND_CW:       color = 0xFFE0; break; // Yellow
+    case BAND_DIGI:     color = 0x07FF; break; // Cyan
+    case BAND_VOICE:    color = 0x07E0; break; // Green
+    case BAND_ALL_MODE: color = 0x03E0; break; // Dark Green
+    case BAND_BEACON:   color = 0xFD20; break; // Orange
+    case BAND_SAT:      color = 0xF81F; break; // Magenta
+    case BAND_CB_DX:    color = 0x001F; break; // Blue
+    default:            break;
+  }
+}
+
+  spr.drawFastVLine(i, y - 1, 3, color);
+}
+
+// Draw remarkable frequency markers
+for(uint8_t i = 0; i < getNamedFrequencyCount(); i++)
+{
+  uint16_t markerFreq = getNamedFrequencyFreq(i);
+
+  if(markerFreq >= band->minimumFreq && markerFreq <= band->maximumFreq)
+  {
+    uint16_t markerX = scaleStart +
+      ((uint32_t)(markerFreq - band->minimumFreq) * (scaleEnd - scaleStart)) /
+      (band->maximumFreq - band->minimumFreq);
+
+    spr.drawFastVLine(markerX, y + 2, 4, TH.scale_text);
+  }
+}
+
   spr.drawCircle(scaleStart, y, 3, TH.scale_line);
   spr.drawCircle(scaleEnd, y, 3, TH.scale_line);
   spr.fillCircle(scaleStart + (scaleEnd-scaleStart) * (freq - band->minimumFreq) / (band->maximumFreq - band->minimumFreq), y, 3, TH.scale_pointer);

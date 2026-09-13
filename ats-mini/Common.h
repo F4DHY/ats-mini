@@ -225,6 +225,25 @@ const char *getRdsTime();
 uint16_t getRdsPiCode();
 void clearStationInfo();
 bool checkRds();
+
+enum BandUsage : uint8_t
+{
+  BAND_NONE,
+  BAND_CW,
+  BAND_DIGI,
+  BAND_VOICE,
+  BAND_ALL_MODE,
+  BAND_BEACON,
+  BAND_SAT,
+  BAND_CB_DX
+};
+
+BandUsage getBandUsage(uint16_t freq);
+
+uint8_t getNamedFrequencyCount();
+uint16_t getNamedFrequencyFreq(uint8_t index);
+const char *getNamedFrequencyName(uint8_t index);
+
 bool identifyFrequency(uint16_t freq, bool periodic = false);
 
 // Network.cpp

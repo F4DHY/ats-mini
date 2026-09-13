@@ -23,19 +23,24 @@ static const NamedFreq namedFrequencies[] =
   { 27700, "SSTV" }, { 28074, "FT8"  }, { 28680, "SSTV" },
 };
 
+uint8_t getNamedFrequencyCount()
+{
+  return ITEM_COUNT(namedFrequencies);
+}
+
+uint16_t getNamedFrequencyFreq(uint8_t index)
+{
+  return namedFrequencies[index].freq;
+}
+
+const char *getNamedFrequencyName(uint8_t index)
+{
+  return namedFrequencies[index].name;
+}
+
 //
 // Amateur band context
 //
-enum BandUsage : uint8_t
-{
-  BAND_CW,
-  BAND_DIGI,
-  BAND_VOICE,
-  BAND_ALL_MODE,
-  BAND_BEACON,
-  BAND_SAT,
-  BAND_CB_DX
-};
 
 enum IaruRegion : uint8_t
 {
@@ -140,6 +145,17 @@ static const BandZone bandZones[] =
   { 29300, 29510, "10m", BAND_SAT,      REGION_ALL },
   { 29510, 29700, "10m", BAND_ALL_MODE, REGION_ALL },
 };
+
+BandUsage getBandUsage(uint16_t freq)
+{
+  for(const BandZone &zone : bandZones)
+  {
+    if(freq >= zone.freq_start && freq < zone.freq_end)
+      return zone.usage;
+  }
+
+  return BAND_NONE;
+}
 
 static const char *bandUsageName(BandUsage usage)
 {
