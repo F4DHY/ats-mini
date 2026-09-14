@@ -5,12 +5,37 @@
 #include "Draw.h"
 #include <string.h>
 
+static int16_t fisheyeX(int32_t deltaFreq)
+{
+  float d = deltaFreq / 10.0f;   // 10 kHz = 1 unité
+
+  float ad = fabs(d);
+
+  // Zoom progressif près du centre
+  float zoom = 1.0f + 0.80f * expf(-ad / 8.0f);
+
+  return 160 + (int16_t)(d * 8.0f * zoom);
+}
+
+static int16_t fisheyeY(int16_t x)
+{
+  float dx = (x - 160) / 80.0f;
+
+  if(fabs(dx) >= 1.0f)
+    return 0;
+
+  return (int16_t)(12.0f * (1.0f - dx * dx));
+}
+
+
 static void drawF4DHYScale(uint32_t freq)
 {
   uint32_t centerFreq = freq;
+  const int16_t scaleShiftY = 0;
   // Scale pointer
-  spr.fillTriangle(156, 120, 160, 130, 164, 120, TH.scale_pointer);
-  spr.drawLine(160, 130, 160, 169, TH.scale_pointer);
+  spr.drawLine(160, 120, 160, 160, TH.scale_pointer);
+  spr.fillTriangle(156, 169, 160, 160, 164, 169, TH.scale_pointer);
+  
 
   spr.setTextDatum(MC_DATUM);
   spr.setTextColor(TH.scale_text);
@@ -32,7 +57,9 @@ static void drawF4DHYScale(uint32_t freq)
 
   for(int i=0 ; i<(slack + 41 + slack) ; i++, freq++)
   {
-    int16_t x = i * 8 - offset;
+    int32_t deltaFreq = ((int32_t)freq * 10) - (int32_t)centerFreq;
+    int16_t x = fisheyeX(deltaFreq);
+    int16_t yOffset = fisheyeY(x);
     uint16_t tickFreq = freq * 10;
     uint16_t lineColor = TH.scale_line;
 
@@ -73,24 +100,24 @@ if(useBandColors)
 
       if((freq % 10) == 0)
       {
-        spr.drawLine(x, 169, x, 150, lineColor);
-        spr.drawLine(x + 1, 169, x + 1, 150, lineColor);
+        spr.drawLine(x, 169 + scaleShiftY, x, 150 - yOffset + scaleShiftY, lineColor);
+        spr.drawLine(x + 1, 169 + scaleShiftY, x + 1, 150 - yOffset + scaleShiftY, lineColor);
 
         if(currentMode == FM)
-          spr.drawFloat(freq / 10.0, 1, x, 140, 2);
+         spr.drawFloat(freq / 10.0, 1, x, 138 - yOffset, 2);
         else if(freq >= 100)
-          spr.drawFloat(freq / 100.0, 3, x, 140, 2);
+         spr.drawFloat(freq / 100.0, 3, x, 138 - yOffset, 2);
         else
-          spr.drawNumber(freq * 10, x, 140, 2);
+         spr.drawNumber(freq * 10, x, 138 - yOffset, 2);
       }
       else if((freq % 5) == 0 && (freq % 10) != 0)
       {
-        spr.drawLine(x, 169, x, 155, lineColor);
-        spr.drawLine(x + 1, 169, x + 1, 155, lineColor);
+        spr.drawLine(x, 169 + scaleShiftY, x, 155 - yOffset + scaleShiftY, lineColor);
+        spr.drawLine(x + 1, 169 + scaleShiftY, x + 1, 155 - yOffset + scaleShiftY, lineColor);
       }
       else
       {
-        spr.drawLine(x, 169, x, 160, lineColor);
+        spr.drawLine(x, 169 + scaleShiftY, x, 160 - yOffset + scaleShiftY, lineColor);
       }
     }
   }
@@ -102,17 +129,20 @@ if(useBandColors)
    for(uint8_t i = 0; i < getNamedFrequencyCount(); i++)
    {
      uint16_t markerFreq = getNamedFrequencyFreq(i);
+     if(markerFreq < band->minimumFreq || markerFreq > band->maximumFreq)
+        continue;
  
      int32_t deltaFreq = (int32_t)markerFreq - (int32_t)centerFreq;
-     int16_t markerX = 160 + (deltaFreq * 8) / 10;
+     int16_t markerX = fisheyeX(deltaFreq);
+     int16_t markerYOffset = fisheyeY(markerX);
 
      if(markerX >= 0 && markerX <= 319)
      {
        spr.fillTriangle(
-         markerX - 3, 152,
-         markerX + 3, 152,
-         markerX,     156,
-         TH.scale_text
+        markerX - 3, 152 - markerYOffset + scaleShiftY,
+        markerX + 3, 152 - markerYOffset + scaleShiftY,
+        markerX,     156 - markerYOffset + scaleShiftY,
+        TH.scale_text
        );
      }
    }
