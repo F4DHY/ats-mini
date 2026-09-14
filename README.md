@@ -1,9 +1,4 @@
-> ⚠️ **Work in progress**
->
-> I'm currently working on this version and adding new features.  
-> It's not ready for use yet.
->
-> Stay tuned! :)
+
 
 
 # ATS Mini - F4DHY Mod
@@ -17,6 +12,10 @@ Developed and tested on an **ATS Mini V4 / AMNVolt V4** using the **ESP32-S3 OSP
 
 This fork currently includes:
 
+* New optional **F4DHY-UI** layout with graphical band context
+* **Frequency markers** for known FT8, SSTV and DX frequencies
+* Dynamic **fisheye tuning scale** around the tuned frequency
+* **FM broadcast context** with `FM RADIO` display when no RDS station name is available
 * Improved **WiFi / NTP Sync Only** behavior and status messages
 * Improved **battery gauge** with continuous indication and low-battery warning
 * **HF amateur band context** directly displayed on the radio screen
@@ -189,6 +188,48 @@ Band plans, allocations, operating modes and transmitting privileges may vary by
 
 *Dedicated display for the well-known 27.555 MHz USB DX calling frequency.*
 
+
+---
+
+## F4DHY-UI
+
+Mod 4 adds a new optional display layout called **F4DHY-UI**, while keeping the original Default and S-Meter layouts unchanged.
+
+It adds graphical frequency information directly to the tuning scale:
+
+* Band areas are color-coded according to the existing **HF / CB Band Context**
+* Known **FT8, SSTV and DX frequencies** are shown as small markers
+* Frequency markers are limited to the currently selected receiver band
+* Monochrome themes keep their original appearance
+* FM broadcast context is provided from **87.5 to 108 MHz**
+* `FM RADIO` is displayed when no RDS station name is available
+
+### Fisheye tuning scale
+
+F4DHY-UI also uses a moderate fisheye effect around the tuned frequency.
+
+Graduations are progressively spaced out near the center of the display and slightly raised, making the area around the tuned frequency easier to read while keeping the rest of the band visible.
+
+Frequency labels and remarkable-frequency markers follow the same effect and remain aligned with their corresponding graduations.
+
+The tuned frequency remains fixed at the center of the display.
+
+### Screenshots
+
+#### F4DHY-UI
+![F4DHY-UI](docs/images/ui.jpeg)
+
+*F4DHY-UI main tuning display.*
+
+#### Graphical band context
+![Graphical band context](docs/images/bar.jpeg)
+
+*Color-coded band context and remarkable-frequency markers.*
+
+#### Fisheye tuning scale
+![Fisheye tuning scale](docs/images/fish.jpeg)
+
+*Dynamic fisheye effect around the tuned frequency.*
 
 ---
 
